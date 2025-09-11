@@ -11,86 +11,98 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
     
     <style>
-        /* --- UPDATED FOR DARK THEME --- */
+        :root {
+            --bg-dark: #111827;
+            --bg-light: #1F2937;
+            --primary-red: #EF4444;
+            --text-primary: #F9FAFB;
+            --text-secondary: #D1D5DB;
+        }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0A192F; /* dark-navy */
+            background-color: var(--bg-dark);
             overflow-y: auto;
         }
 
         #scanner-container { position: relative; width: 100%; padding-top: 100%; overflow: hidden; border-radius: 1.5rem; }
         #scanner-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-        #viewfinder { position: absolute; top: 10%; left: 10%; width: 80%; height: 80%; box-shadow: 0 0 0 400px rgba(0,0,0,0.5); border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 1rem; }
+        #viewfinder { position: absolute; top: 10%; left: 10%; width: 80%; height: 80%; box-shadow: 0 0 0 400px rgba(17, 24, 39, 0.7); border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 1rem; }
         #viewfinder::before, #viewfinder::after { content: ''; position: absolute; width: 40px; height: 40px; }
-        #viewfinder::before { top: -2px; left: -2px; border-top: 4px solid #4f46e5; border-left: 4px solid #4f46e5; border-radius: 1rem 0 0 0; }
-        #viewfinder::after { top: -2px; right: -2px; border-top: 4px solid #4f46e5; border-right: 4px solid #4f46e5; border-radius: 0 1rem 0 0; }
+        #viewfinder::before { top: -2px; left: -2px; border-top: 4px solid var(--primary-red); border-left: 4px solid var(--primary-red); border-radius: 1rem 0 0 0; }
+        #viewfinder::after { top: -2px; right: -2px; border-top: 4px solid var(--primary-red); border-right: 4px solid var(--primary-red); border-radius: 0 1rem 0 0; }
         .viewfinder-bottom::before, .viewfinder-bottom::after { content: ''; position: absolute; width: 40px; height: 40px; }
-        .viewfinder-bottom::before { bottom: -2px; left: -2px; border-bottom: 4px solid #4f46e5; border-left: 4px solid #4f46e5; border-radius: 0 0 0 1rem; }
-        .viewfinder-bottom::after { bottom: -2px; right: -2px; border-bottom: 4px solid #4f46e5; border-right: 4px solid #4f46e5; border-radius: 0 0 1rem 0; }
-        .scan-line { position: absolute; top: 0; left: 5%; width: 90%; height: 3px; background: linear-gradient(90deg, transparent, #a5b4fc, transparent); border-radius: 3px; animation: scan 2.5s infinite ease-in-out; }
-        @keyframes scan { 0% { transform: translateY(10px); } 50% { transform: translateY(calc(100% - 10px)); } 100% { transform: translateY(10px); } }
+        .viewfinder-bottom::before { bottom: -2px; left: -2px; border-bottom: 4px solid var(--primary-red); border-left: 4px solid var(--primary-red); border-radius: 0 0 0 1rem; }
+        .viewfinder-bottom::after { bottom: -2px; right: -2px; border-bottom: 4px solid var(--primary-red); border-right: 4px solid var(--primary-red); border-radius: 0 0 1rem 0; }
+        
+        .scan-line { 
+            position: absolute; top: 0; left: 5%; width: 90%; height: 3px; 
+            background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.8), transparent);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
+            border-radius: 3px; 
+            animation: scan 2.5s infinite ease-in-out; 
+        }
+        @keyframes scan { 
+            0% { transform: translateY(10px); } 
+            50% { transform: translateY(calc(100% - 10px)); } 
+            100% { transform: translateY(10px); } 
+        }
         
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         .modal-fade-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes slideDownIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .log-entry-animation { animation: slideDownIn 0.4s ease-out forwards; }
 
-        /* --- UPDATED FOR DARK THEME --- */
         .log-list::-webkit-scrollbar { width: 8px; }
-        .log-list::-webkit-scrollbar-track { background: #102A43; border-radius: 10px; }
-        .log-list::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 10px; }
-        .log-list::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+        .log-list::-webkit-scrollbar-track { background: var(--bg-dark); border-radius: 10px; }
+        .log-list::-webkit-scrollbar-thumb { background: var(--primary-red); border-radius: 10px; }
+        .log-list::-webkit-scrollbar-thumb:hover { background: #d03030; }
     </style>
 </head>
-<body class="h-full flex flex-col items-center justify-start p-4 md:py-8">
+<body class="h-full flex flex-col items-center justify-start p-4 md:py-8 text-text-secondary">
 
     <div class="w-full max-w-md mx-auto">
-        <!-- --- UPDATED FOR DARK THEME --- -->
-        <div class="bg-[#102A43] rounded-2xl shadow-2xl overflow-hidden text-center p-6 md:p-8">
-            <h1 class="text-5xl font-bold text-indigo-400" style="font-family: 'Bebas Neue', cursive;">Ticket Verifier</h1>
-            <p class="text-slate-400 mt-2 mb-6">For IGNITE 2025 🔥</p>
-            <div id="scanner-container" class="bg-gray-900">
+        <div class="bg-bg-light rounded-2xl shadow-2xl overflow-hidden text-center p-6 md:p-8">
+            <h1 class="text-5xl font-bold text-red-500" style="font-family: 'Bebas Neue', cursive;">Ticket Verifier</h1>
+            <p class="text-text-secondary mt-2 mb-6">For IGNITE 2025 🔥</p>
+            <div id="scanner-container" class="bg-black">
                 <video id="scanner-video" playsinline></video>
                 <div id="viewfinder"><div class="viewfinder-bottom"></div><div class="scan-line"></div></div>
             </div>
             <canvas id="scanner-canvas" class="hidden"></canvas>
-            <p id="scan-status-message" class="mt-4 text-slate-300 font-medium">Requesting camera access...</p>
-            <div class="my-6 flex items-center"><hr class="flex-grow border-t border-slate-700"><span class="px-3 text-slate-500 text-sm font-semibold">OR</span><hr class="flex-grow border-t border-slate-700"></div>
-            <label for="file-input" class="w-full cursor-pointer bg-slate-700 text-slate-200 font-bold py-3 px-4 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2">
+            <p id="scan-status-message" class="mt-4 font-medium text-text-primary">Requesting camera access...</p>
+            <div class="my-6 flex items-center"><hr class="flex-grow border-t border-gray-700"><span class="px-3 text-gray-500 text-sm font-semibold">OR</span><hr class="flex-grow border-t border-gray-700"></div>
+            <label for="file-input" class="w-full cursor-pointer bg-gray-700 text-text-primary font-bold py-3 px-4 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-red-500/50 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 <span>Scan From Photo</span>
             </label>
             <input type="file" id="file-input" accept="image/*" class="hidden">
         </div>
 
-        <!-- --- UPDATED FOR DARK THEME --- -->
-        <div class="bg-[#102A43] rounded-2xl shadow-2xl text-left p-6 md:p-8 mt-8">
+        <div class="bg-bg-light rounded-2xl shadow-2xl text-left p-6 md:p-8 mt-8">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-slate-200">Verification Log</h2>
+                <h2 class="text-2xl font-bold text-text-primary">Verification Log</h2>
                 <div class="text-right">
-                    <p class="font-semibold text-slate-400">Checked-In</p>
-                    <p class="text-3xl font-bold text-indigo-400" id="log-count">0</p>
+                    <p class="font-semibold text-text-secondary">Checked-In</p>
+                    <p class="text-3xl font-bold text-red-500" id="log-count">0</p>
                 </div>
             </div>
             <div id="log-list" class="log-list max-h-64 overflow-y-auto pr-2 space-y-3">
-                <p id="log-placeholder" class="text-center text-slate-400 py-8">No attendees verified yet.</p>
+                <p id="log-placeholder" class="text-center text-text-secondary py-8">No attendees verified yet.</p>
             </div>
         </div>
-
     </div>
 
-    <!-- --- UPDATED FOR DARK THEME --- -->
     <div id="result-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-[#102A43] rounded-2xl shadow-xl max-w-sm w-full p-8 text-center modal-fade-in border border-slate-700">
+        <div class="bg-bg-light rounded-2xl shadow-xl max-w-sm w-full p-8 text-center modal-fade-in border border-gray-700">
              <div id="result-icon"></div>
              <h3 id="result-title" class="text-2xl font-bold mt-4"></h3>
              <div id="attendee-details" class="mt-4 text-left space-y-2 hidden">
-                 <div><p class="text-sm font-medium text-slate-400">Name</p><p id="attendee-name" class="text-xl font-semibold text-slate-200"></p></div>
-                 <div><p class="text-sm font-medium text-slate-400">Email</p><p id="attendee-email" class="text-lg text-slate-300"></p></div>
-                 <div><p class="text-sm font-medium text-slate-400">Ticket ID</p><p id="attendee-id" class="text-sm text-slate-500 font-mono"></p></div>
-                 <div id="scan-time-wrapper" class="hidden pt-2 mt-2 border-t border-slate-700"><p class="text-sm font-medium text-slate-400">Original Scan Time</p><p id="scan-time" class="text-lg text-slate-300"></p></div>
+                 <div><p class="text-sm font-medium text-text-secondary">Name</p><p id="attendee-name" class="text-xl font-semibold text-text-primary"></p></div>
+                 <div><p class="text-sm font-medium text-text-secondary">Email</p><p id="attendee-email" class="text-lg text-text-secondary"></p></div>
+                 <div><p class="text-sm font-medium text-text-secondary">Ticket ID</p><p id="attendee-id" class="text-sm text-gray-500 font-mono"></p></div>
+                 <div id="scan-time-wrapper" class="hidden pt-2 mt-2 border-t border-gray-700"><p class="text-sm font-medium text-text-secondary">Original Scan Time</p><p id="scan-time" class="text-lg text-text-secondary"></p></div>
              </div>
-             <button id="modal-close-btn" class="mt-8 bg-indigo-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full">Scan Next Ticket</button>
+             <button id="modal-close-btn" class="mt-8 bg-red-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-bg-light focus:ring-red-500 w-full">Scan Next Ticket</button>
         </div>
     </div>
 
@@ -99,15 +111,14 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, updateDoc, serverTimestamp, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
         const firebaseConfig = {
-          apiKey: "AIzaSyAPd9loQiNnouyKtxfwv-s7jcPzpZKmhys",
-          authDomain: "ignite-event-2025-nagpur.firebaseapp.com",
-          projectId: "ignite-event-2025-nagpur",
-          storageBucket: "ignite-event-2025-nagpur.firebasestorage.app",
-          messagingSenderId: "480552824914",
-          appId: "1:480552824914:web:d67e8c9f208c67ac7fef8b",
-          measurementId: "G-RLPWDK8MR2"
+            apiKey: "AIzaSyAPd9loQiNnouyKtxfwv-s7jcPzpZKmhys",
+            authDomain: "ignite-event-2025-nagpur.firebaseapp.com",
+            projectId: "ignite-event-2025-nagpur",
+            storageBucket: "ignite-event-2025-nagpur.appspot.com",
+            messagingSenderId: "480552824914",
+            appId: "1:480552824914:web:d67e8c9f208c67ac7fef8b",
+            measurementId: "G-RLPWDK8MR2"
         };
         
         let db, auth;
@@ -236,18 +247,17 @@
             attendeeDetails.classList.add('hidden');
             scanTimeWrapper.classList.add('hidden');
             
-            // --- UPDATED FOR DARK THEME ---
             const resultClasses = {
                 success: 'text-green-400',
-                error: 'text-red-400',
-                warning: 'text-yellow-400'
+                error: 'text-red-500',
+                warning: 'text-orange-400'
             };
             resultTitle.className = `text-2xl font-bold mt-4 ${resultClasses[type]}`;
 
             const icons = {
                 success: `<svg class="w-20 h-20 mx-auto text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
                 error: `<svg class="w-20 h-20 mx-auto text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
-                warning: `<svg class="w-20 h-20 mx-auto text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`
+                warning: `<svg class="w-20 h-20 mx-auto text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`
             };
             resultIcon.innerHTML = icons[type];
             
@@ -272,16 +282,16 @@
 
         async function initializeFirebase() {
              try {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                await signInAnonymously(auth);
-                console.log("Firebase Verifier Initialized.");
-                setupLogListener();
-            } catch (error) {
-                console.error("Error initializing Firebase:", error);
-                scanStatusMessage.textContent = "Database connection failed.";
-            }
+                 const app = initializeApp(firebaseConfig);
+                 db = getFirestore(app);
+                 auth = getAuth(app);
+                 await signInAnonymously(auth);
+                 console.log("Firebase Verifier Initialized.");
+                 setupLogListener();
+             } catch (error) {
+                 console.error("Error initializing Firebase:", error);
+                 scanStatusMessage.textContent = "Database connection failed.";
+             }
         }
 
         function setupLogListener() {
@@ -305,18 +315,17 @@
                 checkIns.sort((a, b) => b.checkedInAt?.toDate() - a.checkedInAt?.toDate());
 
                 checkIns.forEach(entry => {
-                    // --- UPDATED FOR DARK THEME ---
                     const entryDiv = document.createElement('div');
-                    entryDiv.className = 'log-entry-animation p-3 bg-slate-800 rounded-lg flex items-center space-x-3 border border-slate-700';
+                    entryDiv.className = 'log-entry-animation p-3 bg-gray-800 rounded-lg flex items-center space-x-3 border border-gray-700';
                     const icon = `<svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
                     
                     entryDiv.innerHTML = `
                         <div class="flex-shrink-0">${icon}</div>
                         <div class="flex-grow">
-                            <p class="font-semibold text-slate-200">${entry.name}</p>
-                            <p class="text-xs text-slate-400">ID: ${entry.id.substring(0,8)}...</p>
+                            <p class="font-semibold text-text-primary">${entry.name}</p>
+                            <p class="text-xs text-text-secondary">ID: ${entry.id.substring(0,8)}...</p>
                         </div>
-                        <div class="text-right text-sm text-slate-400">
+                        <div class="text-right text-sm text-text-secondary">
                             ${entry.checkedInAt ? entry.checkedInAt.toDate().toLocaleTimeString() : ''}
                         </div>`;
                     logList.appendChild(entryDiv);
