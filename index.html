@@ -123,6 +123,7 @@
         
         let db, auth;
         let stream = null;
+        const checkedInAttendees = {}; // Object to hold combined log data
 
         const video = document.getElementById('scanner-video');
         const canvasElement = document.getElementById('scanner-canvas');
@@ -186,41 +187,63 @@
             }
         }
 
+        // --- MODIFICATION START ---
+        // This function now checks both 'attendees' and 'attendees_cash' collections.
         async function handleQrCode(data) {
             stopScanner();
-            scanStatusMessage.textContent = "QR Code Detected!";
+            scanStatusMessage.textContent = "QR Code Detected! Verifying...";
             
             try {
                 const ticketData = JSON.parse(data);
-                
-                if (ticketData.id) {
-                    const docRef = doc(db, 'attendees', ticketData.id);
-                    const docSnap = await getDoc(docRef);
-
-                    if (docSnap.exists()) {
-                        const attendee = docSnap.data();
-                        const displayData = { ...attendee, id: docSnap.id };
-
-                        if (attendee.checkedIn) {
-                            showResult('warning', 'Already Checked In', displayData);
-                        } else {
-                            await updateDoc(docRef, {
-                                checkedIn: true,
-                                checkedInAt: serverTimestamp()
-                            });
-                            showResult('success', 'Access Granted', displayData);
-                        }
-                    } else {
-                        showResult('error', 'Invalid Ticket', { name: ticketData.name || "Unknown", email: ticketData.email || "N/A", id: 'NOT FOUND' });
-                    }
-                } else {
+                if (!ticketData.id) {
                     showResult('error', 'Invalid QR Format', null);
+                    return;
                 }
+
+                // Function to process a document once it's found
+                const processDoc = async (docSnap, collectionName) => {
+                    const attendee = docSnap.data();
+                    const displayData = { ...attendee, id: docSnap.id };
+
+                    if (attendee.checkedIn) {
+                        showResult('warning', 'Already Checked In', displayData);
+                    } else {
+                        const docRefToUpdate = doc(db, collectionName, docSnap.id);
+                        await updateDoc(docRefToUpdate, {
+                            checkedIn: true,
+                            checkedInAt: serverTimestamp()
+                        });
+                        showResult('success', 'Access Granted', displayData);
+                    }
+                };
+
+                // 1. Check 'attendees' collection first
+                let docRef = doc(db, 'attendees', ticketData.id);
+                let docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    await processDoc(docSnap, 'attendees');
+                    return; // Found and processed, so we exit.
+                }
+
+                // 2. If not in 'attendees', check 'attendees_cash' collection
+                docRef = doc(db, 'attendees_cash', ticketData.id);
+                docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    await processDoc(docSnap, 'attendees_cash');
+                    return; // Found and processed, so we exit.
+                }
+
+                // 3. If not found in either, the ticket is invalid
+                showResult('error', 'Invalid Ticket', { name: ticketData.name || "Unknown", email: ticketData.email || "N/A", id: 'NOT FOUND' });
+
             } catch (error) {
                 console.error("Verification error:", error);
                 showResult('error', 'Invalid QR Code', null);
             }
         }
+        // --- MODIFICATION END ---
 
         fileInput.addEventListener('change', e => {
             const file = e.target.files[0];
@@ -287,54 +310,75 @@
                  auth = getAuth(app);
                  await signInAnonymously(auth);
                  console.log("Firebase Verifier Initialized.");
-                 setupLogListener();
+                 setupLogListeners();
              } catch (error) {
                  console.error("Error initializing Firebase:", error);
                  scanStatusMessage.textContent = "Database connection failed.";
              }
         }
-
-        function setupLogListener() {
-            const q = query(collection(db, 'attendees'), where('checkedIn', '==', true));
-            onSnapshot(q, (querySnapshot) => {
+        
+        // --- MODIFICATION START ---
+        // This function now renders the log from a combined object of all check-ins.
+        function renderCombinedLog() {
+            const checkIns = Object.values(checkedInAttendees);
+            logCount.textContent = checkIns.length;
+            
+            if (checkIns.length === 0) {
                 logList.innerHTML = '';
-                const checkIns = [];
-                querySnapshot.forEach((doc) => {
-                    checkIns.push({ id: doc.id, ...doc.data() });
-                });
+                logList.appendChild(logPlaceholder);
+                logPlaceholder.classList.remove('hidden');
+                return;
+            }
+            
+            logPlaceholder.classList.add('hidden');
+            logList.innerHTML = '';
 
-                logCount.textContent = checkIns.length;
-                if (checkIns.length === 0) {
-                    logList.appendChild(logPlaceholder);
-                    logPlaceholder.classList.remove('hidden');
-                    return;
-                }
-                
-                logPlaceholder.classList.add('hidden');
-                
-                checkIns.sort((a, b) => b.checkedInAt?.toDate() - a.checkedInAt?.toDate());
+            checkIns.sort((a, b) => b.checkedInAt?.toDate() - a.checkedInAt?.toDate());
 
-                checkIns.forEach(entry => {
-                    const entryDiv = document.createElement('div');
-                    entryDiv.className = 'log-entry-animation p-3 bg-gray-800 rounded-lg flex items-center space-x-3 border border-gray-700';
-                    const icon = `<svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
-                    
-                    entryDiv.innerHTML = `
-                        <div class="flex-shrink-0">${icon}</div>
-                        <div class="flex-grow">
-                            <p class="font-semibold text-text-primary">${entry.name}</p>
-                            <p class="text-xs text-text-secondary">ID: ${entry.id.substring(0,8)}...</p>
-                        </div>
-                        <div class="text-right text-sm text-text-secondary">
-                            ${entry.checkedInAt ? entry.checkedInAt.toDate().toLocaleTimeString() : ''}
-                        </div>`;
-                    logList.appendChild(entryDiv);
-                });
-            }, (error) => {
-                console.error("Firestore listener error:", error);
-                logList.innerHTML = `<p class="text-center text-red-400 py-8">Error loading log. Check permissions.</p>`;
+            checkIns.forEach(entry => {
+                const entryDiv = document.createElement('div');
+                entryDiv.className = 'log-entry-animation p-3 bg-gray-800 rounded-lg flex items-center space-x-3 border border-gray-700';
+                const icon = `<svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                
+                entryDiv.innerHTML = `
+                    <div class="flex-shrink-0">${icon}</div>
+                    <div class="flex-grow">
+                        <p class="font-semibold text-text-primary">${entry.name}</p>
+                        <p class="text-xs text-text-secondary">ID: ${entry.id.substring(0,8)}...</p>
+                    </div>
+                    <div class="text-right text-sm text-text-secondary">
+                        ${entry.checkedInAt ? entry.checkedInAt.toDate().toLocaleTimeString() : ''}
+                    </div>`;
+                logList.appendChild(entryDiv);
             });
         }
+        
+        // This function sets up two listeners, one for each collection.
+        function setupLogListeners() {
+            const handleError = (error, collectionName) => {
+                console.error(`Firestore listener error on ${collectionName}:`, error);
+                logList.innerHTML = `<p class="text-center text-red-400 py-8">Error loading log. Check permissions.</p>`;
+            };
+
+            // Listener 1: for 'attendees'
+            const q1 = query(collection(db, 'attendees'), where('checkedIn', '==', true));
+            onSnapshot(q1, (snapshot) => {
+                snapshot.forEach((doc) => {
+                    checkedInAttendees[doc.id] = { id: doc.id, ...doc.data() };
+                });
+                renderCombinedLog();
+            }, (error) => handleError(error, 'attendees'));
+
+            // Listener 2: for 'attendees_cash'
+            const q2 = query(collection(db, 'attendees_cash'), where('checkedIn', '==', true));
+            onSnapshot(q2, (snapshot) => {
+                snapshot.forEach((doc) => {
+                    checkedInAttendees[doc.id] = { id: doc.id, ...doc.data() };
+                });
+                renderCombinedLog();
+            }, (error) => handleError(error, 'attendees_cash'));
+        }
+        // --- MODIFICATION END ---
 
         document.addEventListener('DOMContentLoaded', () => {
             initializeFirebase();
