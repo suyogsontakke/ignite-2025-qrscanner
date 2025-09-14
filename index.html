@@ -12,8 +12,8 @@
     
     <style>
         :root {
-            --bg-dark: #111827;
-            --bg-light: #1F2937;
+            --bg-dark: #18181b;      /* Softer charcoal background */
+            --bg-light: #27272a;     /* Lighter component background for more pop */
             --primary-red: #EF4444;
             --text-primary: #F9FAFB;
             --text-secondary: #D1D5DB;
@@ -26,9 +26,9 @@
 
         #scanner-container { position: relative; width: 100%; padding-top: 100%; overflow: hidden; border-radius: 1.5rem; }
         #scanner-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-        #viewfinder { position: absolute; top: 10%; left: 10%; width: 80%; height: 80%; box-shadow: 0 0 0 400px rgba(17, 24, 39, 0.7); border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 1rem; }
+        #viewfinder { position: absolute; top: 10%; left: 10%; width: 80%; height: 80%; box-shadow: 0 0 0 400px rgba(24, 24, 27, 0.7); border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 1rem; }
         #viewfinder::before, #viewfinder::after { content: ''; position: absolute; width: 40px; height: 40px; }
-        #viewfinder::before { top: -2px; left: -2px; border-top: 4px solid var(--primary-red); border-left: 4px solid var(--primary-red); border-radius: 1rem 0 0 0; }
+        #viewfinder::before { top: -2px; left: -2px; border-top: 4px solid var(--primary-red); border-left: 44px solid var(--primary-red); border-radius: 1rem 0 0 0; }
         #viewfinder::after { top: -2px; right: -2px; border-top: 4px solid var(--primary-red); border-right: 4px solid var(--primary-red); border-radius: 0 1rem 0 0; }
         .viewfinder-bottom::before, .viewfinder-bottom::after { content: ''; position: absolute; width: 40px; height: 40px; }
         .viewfinder-bottom::before { bottom: -2px; left: -2px; border-bottom: 4px solid var(--primary-red); border-left: 4px solid var(--primary-red); border-radius: 0 0 0 1rem; }
@@ -70,7 +70,7 @@
             </div>
             <canvas id="scanner-canvas" class="hidden"></canvas>
             <p id="scan-status-message" class="mt-4 font-medium text-text-primary">Requesting camera access...</p>
-            <div class="my-6 flex items-center"><hr class="flex-grow border-t border-gray-700"><span class="px-3 text-gray-500 text-sm font-semibold">OR</span><hr class="flex-grow border-t border-gray-700"></div>
+            <div class="my-6 flex items-center"><hr class="flex-grow border-t border-gray-700"><span class="px-3 text-gray-400 text-sm font-semibold">OR</span><hr class="flex-grow border-t border-gray-700"></div>
             <label for="file-input" class="w-full cursor-pointer bg-gray-700 text-text-primary font-bold py-3 px-4 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-red-500/50 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 <span>Scan From Photo</span>
@@ -92,17 +92,17 @@
         </div>
     </div>
 
-    <div id="result-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-bg-light rounded-2xl shadow-xl max-w-sm w-full p-8 text-center modal-fade-in border border-gray-700">
+    <div id="result-modal" class="fixed inset-0 bg-gray-900 flex items-center justify-center p-4 z-50 hidden">
+        <div class="rounded-2xl shadow-xl max-w-sm w-full p-8 text-center modal-fade-in border border-red-700 bg-red-500">
              <div id="result-icon"></div>
-             <h3 id="result-title" class="text-2xl font-bold mt-4"></h3>
+             <h3 id="result-title" class="text-2xl font-bold mt-4 text-black"></h3>
              <div id="attendee-details" class="mt-4 text-left space-y-2 hidden">
-                 <div><p class="text-sm font-medium text-text-secondary">Name</p><p id="attendee-name" class="text-xl font-semibold text-text-primary"></p></div>
-                 <div><p class="text-sm font-medium text-text-secondary">Email</p><p id="attendee-email" class="text-lg text-text-secondary"></p></div>
-                 <div><p class="text-sm font-medium text-text-secondary">Ticket ID</p><p id="attendee-id" class="text-sm text-gray-500 font-mono"></p></div>
-                 <div id="scan-time-wrapper" class="hidden pt-2 mt-2 border-t border-gray-700"><p class="text-sm font-medium text-text-secondary">Original Scan Time</p><p id="scan-time" class="text-lg text-text-secondary"></p></div>
+                 <div><p class="text-sm font-medium text-black">Name</p><p id="attendee-name" class="text-xl font-semibold text-black"></p></div>
+                 <div><p class="text-sm font-medium text-black">Email</p><p id="attendee-email" class="text-lg text-black"></p></div>
+                 <div><p class="text-sm font-medium text-black">Ticket ID</p><p id="attendee-id" class="text-sm text-gray-800 font-mono"></p></div>
+                 <div id="scan-time-wrapper" class="hidden pt-2 mt-2 border-t border-red-700"><p class="text-sm font-medium text-black">Original Scan Time</p><p id="scan-time" class="text-lg text-black"></p></div>
              </div>
-             <button id="modal-close-btn" class="mt-8 bg-red-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-bg-light focus:ring-red-500 w-full">Scan Next Ticket</button>
+             <button id="modal-close-btn" class="mt-8 bg-black text-white font-semibold py-3 px-8 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-500 focus:ring-black w-full">Scan Next Ticket</button>
         </div>
     </div>
 
@@ -187,8 +187,6 @@
             }
         }
 
-        // --- MODIFICATION START ---
-        // This function now checks both 'attendees' and 'attendees_cash' collections.
         async function handleQrCode(data) {
             stopScanner();
             scanStatusMessage.textContent = "QR Code Detected! Verifying...";
@@ -200,7 +198,6 @@
                     return;
                 }
 
-                // Function to process a document once it's found
                 const processDoc = async (docSnap, collectionName) => {
                     const attendee = docSnap.data();
                     const displayData = { ...attendee, id: docSnap.id };
@@ -217,25 +214,22 @@
                     }
                 };
 
-                // 1. Check 'attendees' collection first
                 let docRef = doc(db, 'attendees', ticketData.id);
                 let docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
                     await processDoc(docSnap, 'attendees');
-                    return; // Found and processed, so we exit.
+                    return;
                 }
 
-                // 2. If not in 'attendees', check 'attendees_cash' collection
                 docRef = doc(db, 'attendees_cash', ticketData.id);
                 docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
                     await processDoc(docSnap, 'attendees_cash');
-                    return; // Found and processed, so we exit.
+                    return;
                 }
 
-                // 3. If not found in either, the ticket is invalid
                 showResult('error', 'Invalid Ticket', { name: ticketData.name || "Unknown", email: ticketData.email || "N/A", id: 'NOT FOUND' });
 
             } catch (error) {
@@ -243,7 +237,6 @@
                 showResult('error', 'Invalid QR Code', null);
             }
         }
-        // --- MODIFICATION END ---
 
         fileInput.addEventListener('change', e => {
             const file = e.target.files[0];
@@ -270,19 +263,21 @@
             attendeeDetails.classList.add('hidden');
             scanTimeWrapper.classList.add('hidden');
             
+            // MODIFICATION START: Icon and title colors for red background
             const resultClasses = {
-                success: 'text-green-400',
-                error: 'text-red-500',
-                warning: 'text-orange-400'
+                success: 'text-black', // Changed to black for contrast on red
+                error: 'text-black',   // Changed to black for contrast on red
+                warning: 'text-black'  // Changed to black for contrast on red
             };
             resultTitle.className = `text-2xl font-bold mt-4 ${resultClasses[type]}`;
 
             const icons = {
-                success: `<svg class="w-20 h-20 mx-auto text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
-                error: `<svg class="w-20 h-20 mx-auto text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
-                warning: `<svg class="w-20 h-20 mx-auto text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`
+                success: `<svg class="w-20 h-20 mx-auto text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+                error: `<svg class="w-20 h-20 mx-auto text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`,
+                warning: `<svg class="w-20 h-20 mx-auto text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`
             };
             resultIcon.innerHTML = icons[type];
+            // MODIFICATION END
             
             if (data) {
                 attendeeName.textContent = data.name;
@@ -317,8 +312,6 @@
              }
         }
         
-        // --- MODIFICATION START ---
-        // This function now renders the log from a combined object of all check-ins.
         function renderCombinedLog() {
             const checkIns = Object.values(checkedInAttendees);
             logCount.textContent = checkIns.length;
@@ -337,7 +330,7 @@
 
             checkIns.forEach(entry => {
                 const entryDiv = document.createElement('div');
-                entryDiv.className = 'log-entry-animation p-3 bg-gray-800 rounded-lg flex items-center space-x-3 border border-gray-700';
+                entryDiv.className = 'log-entry-animation p-3 bg-gray-700/50 rounded-lg flex items-center space-x-3 border border-gray-700';
                 const icon = `<svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
                 
                 entryDiv.innerHTML = `
@@ -353,14 +346,12 @@
             });
         }
         
-        // This function sets up two listeners, one for each collection.
         function setupLogListeners() {
             const handleError = (error, collectionName) => {
                 console.error(`Firestore listener error on ${collectionName}:`, error);
                 logList.innerHTML = `<p class="text-center text-red-400 py-8">Error loading log. Check permissions.</p>`;
             };
 
-            // Listener 1: for 'attendees'
             const q1 = query(collection(db, 'attendees'), where('checkedIn', '==', true));
             onSnapshot(q1, (snapshot) => {
                 snapshot.forEach((doc) => {
@@ -369,7 +360,6 @@
                 renderCombinedLog();
             }, (error) => handleError(error, 'attendees'));
 
-            // Listener 2: for 'attendees_cash'
             const q2 = query(collection(db, 'attendees_cash'), where('checkedIn', '==', true));
             onSnapshot(q2, (snapshot) => {
                 snapshot.forEach((doc) => {
@@ -378,7 +368,6 @@
                 renderCombinedLog();
             }, (error) => handleError(error, 'attendees_cash'));
         }
-        // --- MODIFICATION END ---
 
         document.addEventListener('DOMContentLoaded', () => {
             initializeFirebase();
