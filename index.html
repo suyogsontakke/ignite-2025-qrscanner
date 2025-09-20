@@ -12,33 +12,33 @@
     
     <style>
         :root {
-            --bg-dark: #111827;
-            --bg-light: #1F2937;
-            --primary-red: #EF4444;
-            --text-primary: #F9FAFB;
-            --text-secondary: #D1D5DB;
+            --bg-dark: #0B120E;
+            --bg-light: #111A15;
+            --primary-green: #16FF00;
+            --text-primary: #f8fafc;
+            --text-secondary: #a0aec0;
         }
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-dark);
             overflow-y: auto;
-            color: var(--text-secondary); /* Default text color */
+            color: var(--text-secondary);
         }
 
         #scanner-container { position: relative; width: 100%; padding-top: 100%; overflow: hidden; border-radius: 1.5rem; }
         #scanner-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-        #viewfinder { position: absolute; top: 10%; left: 10%; width: 80%; height: 80%; box-shadow: 0 0 0 400px rgba(17, 24, 39, 0.7); border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 1rem; }
+        #viewfinder { position: absolute; top: 10%; left: 10%; width: 80%; height: 80%; box-shadow: 0 0 0 400px rgba(11, 26, 21, 0.7); border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 1rem; }
         #viewfinder::before, #viewfinder::after { content: ''; position: absolute; width: 40px; height: 40px; }
-        #viewfinder::before { top: -2px; left: -2px; border-top: 4px solid var(--primary-red); border-left: 4px solid var(--primary-red); border-radius: 1rem 0 0 0; }
-        #viewfinder::after { top: -2px; right: -2px; border-top: 4px solid var(--primary-red); border-right: 4px solid var(--primary-red); border-radius: 0 1rem 0 0; }
+        #viewfinder::before { top: -2px; left: -2px; border-top: 4px solid var(--primary-green); border-left: 4px solid var(--primary-green); border-radius: 1rem 0 0 0; }
+        #viewfinder::after { top: -2px; right: -2px; border-top: 4px solid var(--primary-green); border-right: 4px solid var(--primary-green); border-radius: 0 1rem 0 0; }
         .viewfinder-bottom::before, .viewfinder-bottom::after { content: ''; position: absolute; width: 40px; height: 40px; }
-        .viewfinder-bottom::before { bottom: -2px; left: -2px; border-bottom: 4px solid var(--primary-red); border-left: 4px solid var(--primary-red); border-radius: 0 0 0 1rem; }
-        .viewfinder-bottom::after { bottom: -2px; right: -2px; border-bottom: 4px solid var(--primary-red); border-right: 4px solid var(--primary-red); border-radius: 0 0 1rem 0; }
+        .viewfinder-bottom::before { bottom: -2px; left: -2px; border-bottom: 4px solid var(--primary-green); border-left: 4px solid var(--primary-green); border-radius: 0 0 0 1rem; }
+        .viewfinder-bottom::after { bottom: -2px; right: -2px; border-bottom: 4px solid var(--primary-green); border-right: 4px solid var(--primary-green); border-radius: 0 0 1rem 0; }
         
         .scan-line { 
             position: absolute; top: 0; left: 5%; width: 90%; height: 3px; 
-            background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.8), transparent);
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
+            background: linear-gradient(90deg, transparent, rgba(22, 255, 0, 0.8), transparent);
+            box-shadow: 0 0 10px rgba(22, 255, 0, 0.7);
             border-radius: 3px; 
             animation: scan 2.5s infinite ease-in-out; 
         }
@@ -55,15 +55,16 @@
 
         .log-list::-webkit-scrollbar { width: 8px; }
         .log-list::-webkit-scrollbar-track { background: var(--bg-dark); border-radius: 10px; }
-        .log-list::-webkit-scrollbar-thumb { background: var(--primary-red); border-radius: 10px; }
-        .log-list::-webkit-scrollbar-thumb:hover { background: #d03030; }
+        .log-list::-webkit-scrollbar-thumb { background: var(--primary-green); border-radius: 10px; }
+        .log-list::-webkit-scrollbar-thumb:hover { background: #12e000; }
+        .neon-text { color: var(--primary-green); text-shadow: 0 0 5px var(--primary-green), 0 0 10px var(--primary-green); }
     </style>
 </head>
 <body class="h-full flex flex-col items-center justify-start p-4 md:py-8">
 
     <div class="w-full max-w-md mx-auto">
         <div class="bg-bg-light rounded-2xl shadow-2xl overflow-hidden text-center p-6 md:p-8">
-            <h1 class="text-5xl font-bold text-red-500" style="font-family: 'Bebas Neue', cursive;">Ticket Verifier</h1>
+            <h1 class="text-5xl font-bold neon-text" style="font-family: 'Bebas Neue', cursive;">Ticket Verifier</h1>
             <p class="text-text-secondary mt-2 mb-6">For IGNITE 2025 🔥</p>
             <div id="scanner-container" class="bg-black">
                 <video id="scanner-video" playsinline></video>
@@ -72,7 +73,7 @@
             <canvas id="scanner-canvas" class="hidden"></canvas>
             <p id="scan-status-message" class="mt-4 font-medium text-text-primary">Requesting camera access...</p>
             <div class="my-6 flex items-center"><hr class="flex-grow border-t border-gray-700"><span class="px-3 text-gray-400 text-sm font-semibold">OR</span><hr class="flex-grow border-t border-gray-700"></div>
-            <label for="file-input" class="w-full cursor-pointer bg-gray-700 text-text-primary font-bold py-3 px-4 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-red-500/50 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2">
+            <label for="file-input" class="w-full cursor-pointer bg-gray-700 text-text-primary font-bold py-3 px-4 rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-green-500/50 transition-all transform hover:scale-105 shadow-lg flex items-center justify-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 <span>Scan From Photo</span>
             </label>
@@ -84,7 +85,7 @@
                 <h2 class="text-2xl font-bold text-white">Verification Log</h2>
                 <div class="text-right">
                     <p class="font-semibold text-gray-300">Checked-In</p>
-                    <p class="text-3xl font-bold text-red-500" id="log-count">0</p>
+                    <p class="text-3xl font-bold text-green-500" id="log-count">0</p>
                 </div>
             </div>
             <div id="log-list" class="log-list max-h-64 overflow-y-auto pr-2 space-y-3">
@@ -108,28 +109,24 @@
                   <div><p class="text-sm font-medium text-gray-400">Ticket ID</p><p id="attendee-id" class="text-sm text-gray-500 font-mono"></p></div>
                   <div id="scan-time-wrapper" class="hidden pt-2 mt-2 border-t border-gray-700"><p class="text-sm font-medium text-gray-400">Original Scan Time</p><p id="scan-time" class="text-lg text-gray-300"></p></div>
               </div>
-              <button id="modal-close-btn" class="mt-8 bg-red-600 text-white font-semibold py-3 px-8 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-bg-light focus:ring-red-500 w-full">Scan Next Ticket</button>
+              <button id="modal-close-btn" class="mt-8 bg-green-600 text-black font-semibold py-3 px-8 rounded-lg hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-bg-light focus:ring-green-500 w-full">Scan Next Ticket</button>
         </div>
     </div>
 
     <div id="password-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-bg-dark/95 backdrop-blur-sm hidden">
         <div class="w-full max-w-xs p-8 space-y-6 rounded-lg shadow-2xl bg-bg-light">
             <h2 class="text-2xl font-bold text-center text-text-primary">Confirm Action</h2>
-            <p class="text-center text-sm text-text-secondary">Enter the admin password to clear the selected log entries. This cannot be undone.</p>
+            <p class="text-center text-sm text-text-secondary">Enter the admin password to clear selected logs. This cannot be undone.</p>
             <form id="password-form">
                 <div class="space-y-4">
                     <div>
                         <label for="clear-password" class="sr-only">Password</label>
-                        <input id="clear-password" type="password" required class="w-full px-4 py-2 text-white transition duration-200 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-red" placeholder="Enter Password">
+                        <input id="clear-password" type="password" required class="w-full px-4 py-2 text-white transition duration-200 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-green)]" placeholder="Enter Password">
                     </div>
                     <p id="password-error-message" class="text-sm text-center text-red-500 hidden">Incorrect Password.</p>
                     <div class="flex gap-4">
-                        <button type="button" id="cancel-clear-btn" class="w-full px-4 py-2 font-bold text-gray-300 transition-colors duration-200 bg-gray-600 rounded-md hover:bg-gray-500">
-                            Cancel
-                        </button>
-                        <button type="submit" class="w-full px-4 py-2 font-bold text-white transition-colors duration-200 rounded-md bg-primary-red hover:bg-red-600">
-                            Confirm
-                        </button>
+                        <button type="button" id="cancel-clear-btn" class="w-full px-4 py-2 font-bold text-gray-300 transition-colors duration-200 bg-gray-600 rounded-md hover:bg-gray-500">Cancel</button>
+                        <button type="submit" class="w-full px-4 py-2 font-bold text-black transition-colors duration-200 rounded-md bg-green-600 hover:bg-green-500">Confirm</button>
                     </div>
                 </div>
             </form>
@@ -142,14 +139,14 @@
         import { getFirestore, doc, getDoc, updateDoc, serverTimestamp, collection, query, where, onSnapshot, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyAPd9loQiNnouyKtxfwv-s7jcPzpZKmhys",
+            apiKey: "YOUR_FIREBASE_API_KEY", // Replace with your Firebase key
             authDomain: "ignite-event-2025-nagpur.firebaseapp.com",
             projectId: "ignite-event-2025-nagpur",
             storageBucket: "ignite-event-2025-nagpur.appspot.com",
             messagingSenderId: "480552824914",
-            appId: "1:480552824914:web:d67e8c9f208c67ac7fef8b",
-            measurementId: "G-RLPWDK8MR2"
+            appId: "1:480552824914:web:d67e8c9f208c67ac7fef8b"
         };
+        const ADMIN_PASSWORD = "1234"; // CHANGE YOUR PASSWORD HERE
         
         let db;
         let stream = null;
@@ -180,7 +177,6 @@
         const passwordForm = document.getElementById('password-form');
         const cancelClearBtn = document.getElementById('cancel-clear-btn');
         const passwordError = document.getElementById('password-error-message');
-
 
         function stopScanner() {
             if (stream) {
@@ -236,51 +232,31 @@
                     return;
                 }
 
-                const processDoc = async (docSnap, collectionName) => {
+                // ONLY CHECK 'approved_registrations' collection
+                const docRef = doc(db, 'approved_registrations', ticketData.id);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
                     const attendee = docSnap.data();
                     const displayData = { ...attendee, id: docSnap.id };
 
                     if (attendee.checkedIn) {
                         showResult('warning', 'Already Checked In', displayData);
                     } else {
-                        const docRefToUpdate = doc(db, collectionName, docSnap.id);
-                        await updateDoc(docRefToUpdate, {
+                        await updateDoc(docRef, {
                             checkedIn: true,
                             checkedInAt: serverTimestamp()
                         });
-
-                        // **FIX: Manually update local state for instant log update**
-                        const updatedAttendeeData = { 
-                            id: docSnap.id, 
-                            ...attendee, 
-                            checkedIn: true, 
-                            checkedInAt: { toDate: () => new Date() }, // Use client-side date as a placeholder
-                            sourceCollection: collectionName
-                        };
-                        checkedInAttendees[docSnap.id] = updatedAttendeeData;
-                        renderCombinedLog(); // Force re-render of the log
+                        
+                        const updatedData = { ...displayData, checkedIn: true, checkedInAt: { toDate: () => new Date() } };
+                        checkedInAttendees[docSnap.id] = updatedData;
+                        renderCombinedLog();
                         
                         showResult('success', 'Access Granted', displayData);
                     }
-                };
-
-                let docRef = doc(db, 'attendees', ticketData.id);
-                let docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    await processDoc(docSnap, 'attendees');
-                    return;
+                } else {
+                    showResult('error', 'Invalid Ticket', { name: ticketData.name || "Unknown", email: "N/A", id: 'NOT FOUND' });
                 }
-
-                docRef = doc(db, 'attendees_cash', ticketData.id);
-                docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    await processDoc(docSnap, 'attendees_cash');
-                    return;
-                }
-
-                showResult('error', 'Invalid Ticket', { name: ticketData.name || "Unknown", email: ticketData.email || "N/A", id: 'NOT FOUND' });
 
             } catch (error) {
                 console.error("Verification error:", error);
@@ -346,43 +322,37 @@
             startScanner();
         });
 
-        async function initializeFirebase() {
-              try {
-                  const app = initializeApp(firebaseConfig);
-                  db = getFirestore(app);
-                  await signInAnonymously(getAuth(app)); 
-                  console.log("Firebase Verifier Initialized.");
-                  setupLogListeners();
-              } catch (error) {
-                  console.error("Error initializing Firebase:", error);
-                  scanStatusMessage.textContent = "Database connection failed.";
-              }
+        async function initializeAppAndScanner() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                await signInAnonymously(getAuth(app)); 
+                console.log("Firebase Verifier Initialized.");
+                setupLogListener();
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+                scanStatusMessage.textContent = "Database connection failed.";
+            }
+            startScanner();
         }
         
         function renderCombinedLog() {
             const checkIns = Object.values(checkedInAttendees);
             logCount.textContent = checkIns.length;
             
-            if (checkIns.length === 0) {
-                logList.innerHTML = '';
-                logList.appendChild(logPlaceholder);
-                logPlaceholder.classList.remove('hidden');
-                return;
-            }
-            
-            logPlaceholder.classList.add('hidden');
+            logPlaceholder.classList.toggle('hidden', checkIns.length > 0);
             logList.innerHTML = '';
 
             checkIns.sort((a, b) => (b.checkedInAt?.toDate() || 0) - (a.checkedInAt?.toDate() || 0));
 
             checkIns.forEach(entry => {
                 const entryDiv = document.createElement('div');
-                entryDiv.className = 'log-entry-animation p-3 bg-gray-700/50 rounded-lg flex items-center space-x-3 border border-gray-700';
+                entryDiv.className = 'log-entry-animation p-3 bg-gray-800/50 rounded-lg flex items-center space-x-3 border border-gray-700';
                 const icon = `<svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
                 
                 entryDiv.innerHTML = `
                     <div class="flex-shrink-0">
-                        <input type="checkbox" class="log-checkbox h-5 w-5 rounded bg-gray-600 border-gray-500 text-red-500 focus:ring-red-500/50" data-id="${entry.id}" data-collection="${entry.sourceCollection}">
+                        <input type="checkbox" class="log-checkbox h-5 w-5 rounded bg-gray-700 border-gray-600 text-green-500 focus:ring-green-500/50" data-id="${entry.id}">
                     </div>
                     <div class="flex-shrink-0">${icon}</div>
                     <div class="flex-grow min-w-0">
@@ -396,16 +366,11 @@
             });
         }
         
-        function setupLogListeners() {
-            const handleError = (error, collectionName) => {
-                console.error(`Firestore listener error on ${collectionName}:`, error);
-                logList.innerHTML = `<p class="text-center text-red-400 py-8">Error loading log. Check permissions.</p>`;
-            };
-
-            const q1 = query(collection(db, 'attendees'), where('checkedIn', '==', true));
-            onSnapshot(q1, (snapshot) => {
+        function setupLogListener() {
+            const q = query(collection(db, 'approved_registrations'), where('checkedIn', '==', true));
+            onSnapshot(q, (snapshot) => {
                 snapshot.docChanges().forEach((change) => {
-                    const docData = { id: change.doc.id, ...change.doc.data(), sourceCollection: 'attendees' };
+                    const docData = { id: change.doc.id, ...change.doc.data() };
                     if (change.type === "added" || change.type === "modified") {
                         checkedInAttendees[change.doc.id] = docData;
                     } else if (change.type === "removed") {
@@ -413,43 +378,24 @@
                     }
                 });
                 renderCombinedLog();
-            }, (error) => handleError(error, 'attendees'));
-
-            const q2 = query(collection(db, 'attendees_cash'), where('checkedIn', '==', true));
-            onSnapshot(q2, (snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                     const docData = { id: change.doc.id, ...change.doc.data(), sourceCollection: 'attendees_cash' };
-                    if (change.type === "added" || change.type === "modified") {
-                        checkedInAttendees[change.doc.id] = docData;
-                    } else if (change.type === "removed") {
-                        delete checkedInAttendees[change.doc.id];
-                    }
-                });
-                renderCombinedLog();
-            }, (error) => handleError(error, 'attendees_cash'));
+            }, (error) => console.error(`Firestore listener error:`, error));
         }
 
         async function clearSelectedLogs() {
             const selectedLogs = document.querySelectorAll('.log-checkbox:checked');
-            if (selectedLogs.length === 0) {
-                alert("No logs selected to clear.");
-                return;
-            }
+            if (selectedLogs.length === 0) return;
 
             try {
                 const batch = writeBatch(db);
                 selectedLogs.forEach(checkbox => {
-                    const docRef = doc(db, checkbox.dataset.collection, checkbox.dataset.id);
+                    const docRef = doc(db, 'approved_registrations', checkbox.dataset.id);
                     batch.update(docRef, { checkedIn: false, checkedInAt: null });
                 });
-                
                 await batch.commit();
-                
-                // Firestore listener will handle the UI update automatically
-                alert(`Success! ${selectedLogs.length} log(s) have been cleared.`);
+                alert(`Success! ${selectedLogs.length} log(s) cleared.`);
             } catch (error) {
                 console.error("Error clearing log:", error);
-                alert(`Error: Could not clear the selected logs. ${error.message}`);
+                alert(`Error: Could not clear logs. ${error.message}`);
             }
         }
 
@@ -466,11 +412,8 @@
         });
 
         clearLogBtn.addEventListener('click', () => {
-            const selectedCount = document.querySelectorAll('.log-checkbox:checked').length;
-            if(selectedCount > 0) {
+            if(document.querySelectorAll('.log-checkbox:checked').length > 0) {
                 passwordModal.classList.remove('hidden');
-            } else {
-                alert("Please select at least one log entry to clear.");
             }
         });
 
@@ -482,10 +425,7 @@
 
         passwordForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const password = e.target['clear-password'].value;
-            const CORRECT_CLEAR_PASSWORD = "1234";
-
-            if (password === CORRECT_CLEAR_PASSWORD) {
+            if (e.target['clear-password'].value === ADMIN_PASSWORD) {
                 await clearSelectedLogs();
                 passwordModal.classList.add('hidden');
                 passwordForm.reset();
@@ -495,10 +435,7 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeFirebase();
-            startScanner();
-        });
+        document.addEventListener('DOMContentLoaded', initializeAppAndScanner);
     </script>
 </body>
 </html>
