@@ -62,7 +62,25 @@
 </head>
 <body class="h-full flex flex-col items-center justify-start p-4 md:py-8">
 
-    <div class="w-full max-w-md mx-auto">
+    <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-bg-dark/95 backdrop-blur-sm">
+        <div class="w-full max-w-xs p-8 space-y-6 rounded-lg shadow-2xl bg-bg-light">
+            <h2 class="text-2xl font-bold text-center text-text-primary">Verifier Access</h2>
+            <form id="login-form">
+                <div class="space-y-4">
+                    <div>
+                        <label for="password" class="sr-only">Password</label>
+                        <input id="password" name="password" type="password" required class="w-full px-4 py-2 text-white transition duration-200 bg-gray-800 border border-gray-700 rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-[var(--primary-green)]" placeholder="Enter Admin Password">
+                    </div>
+                    <p id="login-error-message" class="text-sm text-center text-red-500 hidden">Incorrect Password.</p>
+                    <button type="submit" class="w-full px-4 py-2 font-bold text-black transition-colors duration-200 transform rounded-md bg-[var(--primary-green)] hover:bg-green-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-bg-light focus:ring-[var(--primary-green)]">
+                        Login
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="verifier-app" class="w-full max-w-md mx-auto hidden">
         <div class="bg-bg-light rounded-2xl shadow-2xl overflow-hidden text-center p-6 md:p-8">
             <h1 class="text-5xl font-bold neon-text" style="font-family: 'Bebas Neue', cursive;">Ticket Verifier</h1>
             <p class="text-text-secondary mt-2 mb-6">For IGNITE 2025 🔥</p>
@@ -113,46 +131,37 @@
         </div>
     </div>
 
-    <div id="password-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-bg-dark/95 backdrop-blur-sm hidden">
-        <div class="w-full max-w-xs p-8 space-y-6 rounded-lg shadow-2xl bg-bg-light">
-            <h2 class="text-2xl font-bold text-center text-text-primary">Confirm Action</h2>
-            <p class="text-center text-sm text-text-secondary">Enter the admin password to clear selected logs. This cannot be undone.</p>
-            <form id="password-form">
-                <div class="space-y-4">
-                    <div>
-                        <label for="clear-password" class="sr-only">Password</label>
-                        <input id="clear-password" type="password" required class="w-full px-4 py-2 text-white transition duration-200 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary-green)]" placeholder="Enter Password">
-                    </div>
-                    <p id="password-error-message" class="text-sm text-center text-red-500 hidden">Incorrect Password.</p>
-                    <div class="flex gap-4">
-                        <button type="button" id="cancel-clear-btn" class="w-full px-4 py-2 font-bold text-gray-300 transition-colors duration-200 bg-gray-600 rounded-md hover:bg-gray-500">Cancel</button>
-                        <button type="submit" class="w-full px-4 py-2 font-bold text-black transition-colors duration-200 rounded-md bg-green-600 hover:bg-green-500">Confirm</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, updateDoc, serverTimestamp, collection, query, where, onSnapshot, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // --- CHANGED: Using secure Email/Password login, not anonymous ---
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, serverTimestamp, collection, query, where, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "YOUR_FIREBASE_API_KEY", // Replace with your Firebase key
+            // --- IMPORTANT: Fill in your Firebase config from index.html ---
+            apiKey: "AIzaSyAPd9loQiNnouyKtxfwv-s7jcPzpZKmhys", // From your other files
             authDomain: "ignite-event-2025-nagpur.firebaseapp.com",
             projectId: "ignite-event-2025-nagpur",
             storageBucket: "ignite-event-2025-nagpur.appspot.com",
             messagingSenderId: "480552824914",
             appId: "1:480552824914:web:d67e8c9f208c67ac7fef8b"
         };
-        const ADMIN_PASSWORD = "1234"; // CHANGE YOUR PASSWORD HERE
+        // --- DELETED: Insecure client-side password ---
         
-        let db;
+        // --- CHANGED: Firebase is initialized first ---
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
         let stream = null;
         const checkedInAttendees = {};
 
         // UI Elements
+        const loginModal = document.getElementById('login-modal');
+        const loginForm = document.getElementById('login-form');
+        const loginErrorMessage = document.getElementById('login-error-message');
+        const verifierApp = document.getElementById('verifier-app');
+        
         const video = document.getElementById('scanner-video');
         const canvasElement = document.getElementById('scanner-canvas');
         const canvas = canvasElement.getContext('2d', { willReadFrequently: true });
@@ -173,10 +182,46 @@
         const logPlaceholder = document.getElementById('log-placeholder');
         
         const clearLogBtn = document.getElementById('clear-log-btn');
-        const passwordModal = document.getElementById('password-modal');
-        const passwordForm = document.getElementById('password-form');
-        const cancelClearBtn = document.getElementById('cancel-clear-btn');
-        const passwordError = document.getElementById('password-error-message');
+
+        // --- DELETED: Password Modal UI Elements ---
+
+        // --- NEW: Secure Login Handler ---
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginErrorMessage.classList.add('hidden');
+            
+            // -----------------------------------------------------------------
+            // --- !!! IMPORTANT !!! ---
+            // --- SET THIS TO THE ADMIN EMAIL YOU CREATED IN FIREBASE AUTH ---
+            const email = "your-admin-email@example.com"; 
+            // -----------------------------------------------------------------
+            
+            const password = e.target.password.value;
+
+            try {
+                // Try to sign in with the real Firebase account
+                await signInWithEmailAndPassword(auth, email, password);
+                
+                // On success: Hide login, show app, start scanner
+                loginModal.style.display = 'none';
+                verifierApp.classList.remove('hidden');
+                
+                // Now that we are logged in as admin, start app
+                initializeAppAndScanner(); 
+                
+            } catch (error) {
+                // On failure:
+                console.error("Admin Login Error:", error.code);
+                if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
+                    loginErrorMessage.textContent = "Incorrect password. Please try again.";
+                } else {
+                    loginErrorMessage.textContent = "An error occurred. Check console.";
+                }
+                loginErrorMessage.classList.remove('hidden');
+                e.target.password.value = '';
+            }
+        });
+
 
         function stopScanner() {
             if (stream) {
@@ -243,6 +288,7 @@
                     if (attendee.checkedIn) {
                         showResult('warning', 'Already Checked In', displayData);
                     } else {
+                        // Secure rule allows this update because we are admin
                         await updateDoc(docRef, {
                             checkedIn: true,
                             checkedInAt: serverTimestamp()
@@ -322,18 +368,17 @@
             startScanner();
         });
 
-        async function initializeAppAndScanner() {
+        // --- CHANGED: This function now just starts the listeners and scanner ---
+        // It's called AFTER successful login
+        function initializeAppAndScanner() {
             try {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                await signInAnonymously(getAuth(app)); 
-                console.log("Firebase Verifier Initialized.");
+                console.log("Firebase Verifier Initialized by Admin.");
                 setupLogListener();
+                startScanner();
             } catch (error) {
-                console.error("Error initializing Firebase:", error);
-                scanStatusMessage.textContent = "Database connection failed.";
+                console.error("Error starting app:", error);
+                scanStatusMessage.textContent = "App initialization failed.";
             }
-            startScanner();
         }
         
         function renderCombinedLog() {
@@ -364,6 +409,8 @@
                     </div>`;
                 logList.appendChild(entryDiv);
             });
+            // After re-rendering, update the button state
+            updateClearButtonCount();
         }
         
         function setupLogListener() {
@@ -385,11 +432,13 @@
             const selectedLogs = document.querySelectorAll('.log-checkbox:checked');
             if (selectedLogs.length === 0) return;
 
+            // Secure rule allows this writeBatch because we are admin
             try {
                 const batch = writeBatch(db);
                 selectedLogs.forEach(checkbox => {
                     const docRef = doc(db, 'approved_registrations', checkbox.dataset.id);
-                    batch.update(docRef, { checkedIn: false, checkedInAt: null });
+                    // Reset the check-in status
+                    batch.update(docRef, { checkedIn: false, checkedInAt: null }); 
                 });
                 await batch.commit();
                 alert(`Success! ${selectedLogs.length} log(s) cleared.`);
@@ -411,31 +460,20 @@
             }
         });
 
-        clearLogBtn.addEventListener('click', () => {
-            if(document.querySelectorAll('.log-checkbox:checked').length > 0) {
-                passwordModal.classList.remove('hidden');
+        // --- CHANGED: No longer shows password modal ---
+        clearLogBtn.addEventListener('click', async () => {
+            const selectedCount = document.querySelectorAll('.log-checkbox:checked').length;
+            if (selectedCount > 0) {
+                if (confirm(`Are you sure you want to clear ${selectedCount} selected log(s)? This will reset their check-in status.`)) {
+                    await clearSelectedLogs();
+                }
             }
         });
 
-        cancelClearBtn.addEventListener('click', () => {
-            passwordModal.classList.add('hidden');
-            passwordForm.reset();
-            passwordError.classList.add('hidden');
-        });
+        // --- DELETED: All listeners for the insecure password modal ---
 
-        passwordForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (e.target['clear-password'].value === ADMIN_PASSWORD) {
-                await clearSelectedLogs();
-                passwordModal.classList.add('hidden');
-                passwordForm.reset();
-                passwordError.classList.add('hidden');
-            } else {
-                passwordError.classList.remove('hidden');
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', initializeAppAndScanner);
+        // --- NOTE: App start is now handled by the login form submit listener ---
+        // document.addEventListener('DOMContentLoaded', initializeAppAndScanner); // This is no longer needed
     </script>
 </body>
 </html>
